@@ -119,16 +119,41 @@ export const { addCounter } = countersSlice.actions;
 export default countersSlice.reducer;
 
 
-📝 Personal Takeaways & Notes
-Local vs. Global State: Not all data belongs in Redux. Temporary form values (useState) should remain local until submission. Only lift state to Redux if multiple independent components need access.
+---
 
-Immer Mechanics: state.items.push() works strictly inside RTK slice reducers. Never mutate state outside of slice reducers!
+## 📝 Personal Takeaways & Notes
 
-Naming Conventions: Name slices using plural nouns (counters, users, cartItems) to maintain clear global access paths (state.counters.items).
+> 💡 **Key Learnings from Development**
 
-🌍 Real-World Use Cases
-Shopping Cart System: Managing cart items, quantities, discounts, and totals shared between Header Nav, Product List, and Checkout components.
+* **Local vs. Global State:** Not all data belongs in Redux. Temporary form values (`useState`) should remain local to the component until submission. Only lift state to Redux if multiple independent or distant components need access to it.
+* **Immer Mechanics:** Direct array/object mutations like `state.items.push()` work **strictly inside RTK slice reducers** thanks to Immer.js. *Never mutate state outside of slice reducers!*
+* **Naming Conventions:** Name slices using plural nouns (`counters`, `users`, `cartItems`) to maintain clear and intuitive global state paths (e.g., `state.counters.items`).
 
-User Authentication: Storing session info, access tokens, user roles, and permissions accessed across protected app routes.
+---
+
+## 🌍 Real-World Use Cases
+
+| Domain | Implementation in Redux |
+| :--- | :--- |
+| 🛒 **Shopping Cart System** | Managing cart items, quantities, discounts, and totals shared between Header Nav, Product List, and Checkout components. |
+| 🔑 **User Authentication** | Storing session info, access tokens, user roles, and permissions accessed across protected app routes. |
+| 🔔 **Global Notifications** | Triggering alert popups or toast notifications from async API responses anywhere in the application tree. |
+
+---
+
+## ⚠️ Common Challenges & Solutions
+
+| Problem / Bug | Root Cause | Fix / Solution |
+| :--- | :--- | :--- |
+| `Failed to resolve import "./countersSlice"` | File capitalization mismatch in import statement vs. file system on case-sensitive OS (Linux/Vite). | Verify exact file name casing (`countersSlice.js`) and match relative path strictly. |
+| `Could not find "store" in context of <Provider>` | Components calling `useSelector` or `useDispatch` without a root `<Provider>` wrapper. | Wrap the top-level `<App />` component tree inside `<Provider store={store}>` in `main.jsx`. |
+| Dispatching multiple arguments fails | Redux action creators only accept **one** payload argument (`action.payload`). | Wrap multiple parameters into a single object: `dispatch(updateValue({ id, amount }))`. |
+
+---
+
+## 🚀 Additional Explorations
+
+* 🔍 **Redux DevTools Extension:** Configured browser extensions for real-time state inspection, action history tracing, and time-travel debugging.
+* ⚡ **`createAsyncThunk`:** Managed async API request lifecycles (`pending`, `fulfilled`, `rejected`) cleanly using `extraReducers`.
 
 Global Notifications/Toasts: Triggering global alert popups from async API responses anywhere in the application tree.
