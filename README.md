@@ -70,6 +70,9 @@ Redux Toolkit strictly enforces a **unidirectional (one-way) data flow**:
            ▼
     useSelector() ────► [ Component Re-renders ]
 
+📁 Standard Folder Structure
+RTK recommends a feature-based structure (Ducks pattern):
+
 src/
 ├── app/
 │   └── store.js             # Central Redux store configuration
@@ -83,6 +86,10 @@ src/
 ├── App.jsx
 └── main.jsx
 
+🛠️ Important Functions
+1. configureStore()
+Replaces legacy createStore. Automatically combines slice reducers, adds redux-thunk middleware, and enables Redux DevTools integration.
+
 import { configureStore } from '@reduxjs/toolkit';
 import countersReducer from '../features/counters/countersSlice';
 
@@ -92,3 +99,36 @@ export const store = configureStore({
   },
 });
 
+2. createSlice()
+Accepts an initial state, slice name, and reducer functions. Automatically generates matching action creators and action type strings.
+
+import { createSlice } from '@reduxjs/toolkit';
+
+const countersSlice = createSlice({
+  name: 'counters',
+  initialState: { items: [] },
+  reducers: {
+    addCounter: (state, action) => {
+      // Direct array push is safely handled via Immer
+      state.items.push(action.payload);
+    },
+  },
+});
+
+export const { addCounter } = countersSlice.actions;
+export default countersSlice.reducer;
+
+
+📝 Personal Takeaways & Notes
+Local vs. Global State: Not all data belongs in Redux. Temporary form values (useState) should remain local until submission. Only lift state to Redux if multiple independent components need access.
+
+Immer Mechanics: state.items.push() works strictly inside RTK slice reducers. Never mutate state outside of slice reducers!
+
+Naming Conventions: Name slices using plural nouns (counters, users, cartItems) to maintain clear global access paths (state.counters.items).
+
+🌍 Real-World Use Cases
+Shopping Cart System: Managing cart items, quantities, discounts, and totals shared between Header Nav, Product List, and Checkout components.
+
+User Authentication: Storing session info, access tokens, user roles, and permissions accessed across protected app routes.
+
+Global Notifications/Toasts: Triggering global alert popups from async API responses anywhere in the application tree.
